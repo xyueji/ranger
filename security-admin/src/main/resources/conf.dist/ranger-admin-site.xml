@@ -17,12 +17,13 @@
 <!-- # DB Info -->
 	<property>
 		<name>ranger.jpa.jdbc.driver</name>
-		<value>net.sf.log4jdbc.DriverSpy</value>
+		<value>com.mysql.jdbc.Driver</value>
 		<description></description>
 	</property>
+
 	<property>
 		<name>ranger.jpa.jdbc.url</name>
-		<value>jdbc:log4jdbc:mysql://localhost/ranger</value>
+		<value>jdbc:mysql://10.14.250.121/ranger</value>
 		<description></description>
 	</property>
 	<property>
@@ -32,7 +33,7 @@
 	</property>
 	<property>
 		<name>ranger.jpa.jdbc.password</name>
-		<value>rangeradmin</value>
+		<value>cdptest2021</value>
 		<description></description>
 	</property>
 	<property>
@@ -73,6 +74,18 @@
 	<property>
 		<name>ranger.audit.elasticsearch.bootstrap.enabled</name>
 		<value>true</value>
+	</property>
+	<property>
+		<name>ranger.audit.amazon_cloudwatch.region</name>
+		<value>us-east-2</value>
+	</property>
+	<property>
+		<name>ranger.audit.amazon_cloudwatch.log_group</name>
+		<value>ranger_audits</value>
+	</property>
+	<property>
+		<name>ranger.audit.amazon_cloudwatch.log_stream_prefix</name>
+		<value></value>
 	</property>
 	<property>
 		<name>ranger.audit.solr.urls</name>
@@ -309,6 +322,14 @@
         <name>ranger.kms.service.user.hive</name>
         <value>hive</value>
     </property>
+    <property>
+        <name>ranger.kms.service.user.hbase</name>
+        <value>hbase</value>
+    </property>
+    <property>
+        <name>ranger.kms.service.user.om</name>
+        <value>om</value>
+    </property>
 
     <property>
         <name>ranger.audit.hive.query.visibility</name>
@@ -330,6 +351,10 @@
         </property>
         <property>
                 <name>ranger.audit.solr.config.name</name>
+                <value></value>
+        </property>
+        <property>
+                <name>ranger.audit.solr.configset.location</name>
                 <value></value>
         </property>
         <property>
