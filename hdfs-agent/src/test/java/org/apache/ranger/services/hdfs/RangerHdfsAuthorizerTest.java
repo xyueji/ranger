@@ -206,7 +206,7 @@ public class RangerHdfsAuthorizerTest {
 
     @Test
     public void writeTest() throws AccessControlException {
-        final TestFileSystem fs = new TestFileSystem("/tmp/tmpdir2/data-file3");
+        final TestFileSystem fs = new TestFileSystem("hdfs://SJ-MAIN/tmp/tmpdir2/data-file3");
 
         // Try to write to the file as "bob" - this should be allowed (by the policy - user)
         fs.checkAccess(null, "bob"); // traverse check

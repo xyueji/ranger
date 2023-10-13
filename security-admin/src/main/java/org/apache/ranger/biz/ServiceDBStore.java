@@ -261,19 +261,19 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 	@Autowired
 	RESTErrorUtil restErrorUtil;
-	
+
 	@Autowired
 	RangerServiceService svcService;
-	
+
 	@Autowired
 	StringUtil stringUtil;
-	
+
 	@Autowired
 	RangerAuditFields<?> rangerAuditFields;
-	
+
 	@Autowired
 	RangerPolicyService policyService;
-	
+
 	@Autowired
         RangerPolicyLabelsService<XXPolicyLabel, ?> policyLabelsService;
 
@@ -282,7 +282,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 
         @Autowired
 	XUserService xUserService;
-	
+
 	@Autowired
 	XUserMgr xUserMgr;
 
@@ -313,7 +313,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 
     @Autowired
     RangerFactory factory;
-    
+
     @Autowired
     JSONUtil jsonUtil;
 
@@ -340,7 +340,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 	private static volatile boolean legacyServiceDefsInitDone = false;
 	private Boolean populateExistingBaseFields = false;
-	
+
 	public static final String HIDDEN_PASSWORD_STR = "*****";
 	public static final String CONFIG_KEY_PASSWORD = "password";
 	public static final String ACCESS_TYPE_DECRYPT_EEK    = "decrypteek";
@@ -456,7 +456,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 		// While creating, value of version should be 1.
 		serviceDef.setVersion(Long.valueOf(1));
-		
+
 		if (populateExistingBaseFields) {
 			svcDefServiceWithAssignedId.setPopulateExistingBaseFields(true);
 			daoMgr.getXXServiceDef().setIdentityInsert(true);
@@ -475,7 +475,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 		}
 		Long serviceDefId = serviceDef.getId();
 		XXServiceDef createdSvcDef = daoMgr.getXXServiceDef().getById(serviceDefId);
-		
+
 		XXServiceConfigDefDao xxServiceConfigDao = daoMgr.getXXServiceConfigDef();
 		for(int i = 0; i < configs.size(); i++) {
 			RangerServiceConfigDef config = configs.get(i);
@@ -486,14 +486,14 @@ public class ServiceDBStore extends AbstractServiceStore {
 			xConfig.setOrder(i);
 			xConfig = xxServiceConfigDao.create(xConfig);
 		}
-		
+
 		XXResourceDefDao xxResDefDao = daoMgr.getXXResourceDef();
 		for(int i = 0; i < resources.size(); i++) {
 			RangerResourceDef resource = resources.get(i);
 
 			XXResourceDef parent = xxResDefDao.findByNameAndServiceDefId(resource.getParent(), serviceDefId);
 			Long parentId = (parent != null) ? parent.getId() : null;
-			
+
 			XXResourceDef xResource = new XXResourceDef();
 			xResource = serviceDefService.populateRangerResourceDefToXX(resource, xResource, createdSvcDef,
 					RangerServiceDefService.OPERATION_CREATE_CONTEXT);
@@ -501,7 +501,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 			xResource.setParent(parentId);
 			xResource = xxResDefDao.create(xResource);
 		}
-		
+
 		XXAccessTypeDefDao xxATDDao = daoMgr.getXXAccessTypeDef();
 		for(int i = 0; i < accessTypes.size(); i++) {
 			RangerAccessTypeDef accessType = accessTypes.get(i);
@@ -511,7 +511,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 					RangerServiceDefService.OPERATION_CREATE_CONTEXT);
 			xAccessType.setOrder(i);
 			xAccessType = xxATDDao.create(xAccessType);
-			
+
 			Collection<String> impliedGrants = accessType.getImpliedGrants();
 			XXAccessTypeDefGrantsDao xxATDGrantDao = daoMgr.getXXAccessTypeDefGrants();
 			for(String impliedGrant : impliedGrants) {
@@ -521,7 +521,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 				xImpliedGrant = xxATDGrantDao.create(xImpliedGrant);
 			}
 		}
-		
+
 		XXPolicyConditionDefDao xxPolCondDao = daoMgr.getXXPolicyConditionDef();
 		for (int i = 0; i < policyConditions.size(); i++) {
 			RangerPolicyConditionDef policyCondition = policyConditions.get(i);
@@ -533,7 +533,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 			xPolicyCondition.setOrder(i);
 			xPolicyCondition = xxPolCondDao.create(xPolicyCondition);
 		}
-		
+
 		XXContextEnricherDefDao xxContextEnricherDao = daoMgr.getXXContextEnricherDef();
 		for (int i = 0; i < contextEnrichers.size(); i++) {
 			RangerContextEnricherDef contextEnricher = contextEnrichers.get(i);
@@ -545,13 +545,13 @@ public class ServiceDBStore extends AbstractServiceStore {
 			xContextEnricher.setOrder(i);
 			xContextEnricher = xxContextEnricherDao.create(xContextEnricher);
 		}
-		
+
 		XXEnumDefDao xxEnumDefDao = daoMgr.getXXEnumDef();
 		for(RangerEnumDef vEnum : enums) {
 			XXEnumDef xEnum = new XXEnumDef();
 			xEnum = serviceDefService.populateRangerEnumDefToXX(vEnum, xEnum, createdSvcDef, RangerServiceDefService.OPERATION_CREATE_CONTEXT);
 			xEnum = xxEnumDefDao.create(xEnum);
-			
+
 			List<RangerEnumElementDef> elements = vEnum.getElements();
 			XXEnumElementDefDao xxEnumEleDefDao = daoMgr.getXXEnumElementDef();
 			for(int i = 0; i < elements.size(); i++) {
@@ -1871,7 +1871,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 			RangerPolicy policy = policyService.getPopulatedViewObject(xxPolicy);
 			policies.add(policy);
 		}
-		
+
 		return policies;
 	}
 
@@ -2407,7 +2407,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 			}
 		}
 	}
-	
+
 	public void getPoliciesInJson(List<RangerPolicy> policies,
 			HttpServletResponse response) throws Exception {
 		if (LOG.isDebugEnabled()) {
@@ -2762,7 +2762,9 @@ public class ServiceDBStore extends AbstractServiceStore {
 			LOG.warn("serviceVersionInfo does not exist. name=" + serviceName);
 		}
 
+		// 最主要的是这个版本号，plugin的版本号和服务端版本号不同，说明策略已更新
 		if (lastKnownVersion == null || serviceVersionInfoDbObj == null || serviceVersionInfoDbObj.getPolicyVersion() == null || !lastKnownVersion.equals(serviceVersionInfoDbObj.getPolicyVersion())) {
+			// 获取策略，其中有缓存
 			ret = RangerServicePoliciesCache.getInstance().getServicePolicies(serviceName, serviceDbObj.getId(), lastKnownVersion, needsBackwardCompatibility, this);
 		}
 
@@ -3405,12 +3407,12 @@ public class ServiceDBStore extends AbstractServiceStore {
 		if(configs == null) {
 			return null;
 		}
-		
+
 		List<XXServiceConfigDef> svcConfDefList = daoMgr.getXXServiceConfigDef()
 				.findByServiceDefName(service.getType());
 		for(XXServiceConfigDef svcConfDef : svcConfDefList ) {
 			String confField = configs.get(svcConfDef.getName());
-			
+
 			if(svcConfDef.getIsMandatory() && stringUtil.isEmpty(confField)) {
 				throw restErrorUtil.createRESTException(
 						"Please provide value of mandatory: "+ svcConfDef.getName(),
@@ -4303,20 +4305,20 @@ public class ServiceDBStore extends AbstractServiceStore {
                 csvBuffer.append(COMMA_DELIMITER);
                 csvBuffer.append(LINE_SEPARATOR);
         }
-	
+
 	public void putMetaDataInfo(RangerExportPolicyList rangerExportPolicyList){
 		Map<String, Object> metaDataInfo = new LinkedHashMap<String, Object>();
 		UserSessionBase usb = ContextUtil.getCurrentUserSession();
 		String userId = usb!=null ? usb.getLoginId() : null;
-		
+
 		metaDataInfo.put(HOSTNAME, LOCAL_HOSTNAME);
 		metaDataInfo.put(USER_NAME, userId);
 		metaDataInfo.put(TIMESTAMP, MiscUtil.getUTCDateForLocalDate(new Date()));
 		metaDataInfo.put(RANGER_VERSION, RangerVersionInfo.getVersion());
-		
+
 		rangerExportPolicyList.setMetaDataInfo(metaDataInfo);
 	}
-	
+
 	private void writeJson(List<RangerPolicy> policies, String jsonFileName,
 			HttpServletResponse response) throws JSONException, IOException {
 		response.setContentType("text/json");
@@ -4363,7 +4365,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 			throw restErrorUtil.createRESTException("Provided zone/service map is empty!!");
 		}
 	}
-	
+
 	public Map<String, RangerPolicy> setPolicyMapKeyValue(Map<String, RangerPolicy> policiesMap, RangerPolicy policy){
 		if (StringUtils.isNotEmpty(policy.getName().trim())
 				&& StringUtils.isNotEmpty(policy.getService().trim())
@@ -4382,7 +4384,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 		}
 		return policiesMap;
 	}
-	
+
 	public Map<String, RangerPolicy> createPolicyMap(Map<String, String> zoneMappingMap, List<String> sourceZones,
 			String destinationZoneName, Map<String, String> servicesMappingMap, List<String> sourceServices,
 			List<String> destinationServices, RangerPolicy policy, Map<String, RangerPolicy> policiesMap) {
@@ -4842,7 +4844,7 @@ public class ServiceDBStore extends AbstractServiceStore {
 		updateServiceWithCustomProperty();
 		LOG.info("<== ServiceDBStore.getServiceUpgraded()");
 	}
-	private void updateServiceWithCustomProperty() {		
+	private void updateServiceWithCustomProperty() {
 			LOG.info("Adding custom properties to services");
 			SearchFilter filter = new SearchFilter();
 			try {

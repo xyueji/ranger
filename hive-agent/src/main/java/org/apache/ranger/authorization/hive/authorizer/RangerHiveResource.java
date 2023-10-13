@@ -22,8 +22,9 @@ package org.apache.ranger.authorization.hive.authorizer;
 
 import org.apache.ranger.plugin.policyengine.RangerAccessResourceImpl;
 
-
-
+/**
+ * 资源的封装类，调用鉴权接口时，需要构造这么一个类，并设置需要鉴权的资源
+ */
 public class RangerHiveResource extends RangerAccessResourceImpl {
 	public static final String KEY_DATABASE = "database";
 	public static final String KEY_TABLE    = "table";
@@ -46,7 +47,7 @@ public class RangerHiveResource extends RangerAccessResourceImpl {
 	public RangerHiveResource(HiveObjectType objectType, String firstLevelResource, String secondLevelResource) {
 		this(objectType, firstLevelResource, secondLevelResource, null);
 	}
-	
+
 	public RangerHiveResource(HiveObjectType objectType, String firstLevelResource, String secondLevelResource, String thirdLevelResource) {
 		this.objectType = objectType;
 

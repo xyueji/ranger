@@ -113,6 +113,7 @@ public class RangerAdminRESTClient extends AbstractRangerAdminClient {
 			supportsTagDeltas = "false";
 		}
 
+		// 初始化客户端
 		init(url, sslConfigFileName, restClientConnTimeOutMs , restClientReadTimeOutMs, config);
 
         try {
@@ -143,10 +144,13 @@ public class RangerAdminRESTClient extends AbstractRangerAdminClient {
 		queryParams.put(RangerRESTUtils.REST_PARAM_SUPPORTS_POLICY_DELTAS, supportsPolicyDeltas);
 		queryParams.put(RangerRESTUtils.REST_PARAM_CAPABILITIES, pluginCapabilities);
 
+		// 集群是否启用了kerberos
+		// 可以用此命令查看 hdfs getconf -confKey hadoop.security.authentication
 		if (isSecureMode) {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Checking Service policy if updated as user : " + user);
 			}
+			// 请求ranger服务端，拉取plugin对应的策略
 			PrivilegedAction<ClientResponse> action = new PrivilegedAction<ClientResponse>() {
 				public ClientResponse run() {
 					ClientResponse clientRes = null;

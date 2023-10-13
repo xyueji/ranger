@@ -73,6 +73,7 @@ public class PolicyRefresher extends Thread {
 		this.plugIn      = plugIn;
 		this.serviceType = plugIn.getServiceType();
 		this.serviceName = plugIn.getServiceName();
+		// 策略缓存的本地目录ranger.plugin.<serviceName>.policy.cache.dir
 		this.cacheDir    = pluginConfig.get(propertyPrefix + ".policy.cache.dir");
 
 		String appId         = StringUtils.isEmpty(plugIn.getAppId()) ? serviceType : plugIn.getAppId();
@@ -92,6 +93,8 @@ public class PolicyRefresher extends Thread {
 
 		this.gson                          = gson;
 		this.disableCacheIfServiceNotFound = pluginConfig.getBoolean(propertyPrefix + ".disable.cache.if.servicenotfound", true);
+		// 根据配置ranger.plugin.<serviceName>.policy.source.impl反射获取RangerAdminClient实例
+		// 一般都是org.apache.ranger.admin.client.RangerAdminRESTClient
 		this.rangerAdmin                   = RangerBasePlugin.createAdminClient(pluginConfig);
 		this.rolesProvider                 = new RangerRolesProvider(getServiceType(), appId, getServiceName(), rangerAdmin,  cacheDir, pluginConfig);
 		this.pollingIntervalMs             = pluginConfig.getLong(propertyPrefix + ".policy.pollIntervalMs", 30 * 1000);
@@ -148,6 +151,7 @@ public class PolicyRefresher extends Thread {
 		policyDownloadTimer = new Timer("policyDownloadTimer", true);
 
 		try {
+			// 每30秒拉取一次策略
 			policyDownloadTimer.schedule(new DownloaderTask(policyDownloadQueue), pollingIntervalMs, pollingIntervalMs);
 
 			if (LOG.isDebugEnabled()) {
@@ -204,6 +208,7 @@ public class PolicyRefresher extends Thread {
 			DownloadTrigger trigger = null;
 			try {
 				trigger = policyDownloadQueue.take();
+				// 插件启动后，每30秒不停从ranger拉取策略并缓存，同时对外暴露接口完成资源访问的权限校验。
 				loadRoles();
 				loadPolicy();
 			} catch(InterruptedException excp) {
@@ -243,10 +248,12 @@ public class PolicyRefresher extends Thread {
 
 		try {
 			//load policy from PolicyAdmin
+			// 从ranger服务端拉取策略
 			ServicePolicies svcPolicies = loadPolicyfromPolicyAdmin();
 
 			if (svcPolicies == null) {
 				//if Policy fetch from Policy Admin Fails, load from cache
+				// 如果从ranger服务端拉取失败，则从本地缓存中获取
 				if (!policiesSetInPlugin) {
 					svcPolicies = loadFromCache();
 				}
@@ -259,9 +266,12 @@ public class PolicyRefresher extends Thread {
 			}
 
 			if (svcPolicies != null) {
+				// 如果策略有更新缓存到本地
 				plugIn.setPolicies(svcPolicies);
+				// 说明服务端正常
 				policiesSetInPlugin = true;
 				setLastActivationTimeInMillis(System.currentTimeMillis());
+				// 更新本地的版本号
 				lastKnownVersion = svcPolicies.getPolicyVersion() != null ? svcPolicies.getPolicyVersion() : -1L;
 			} else {
 				if (!policiesSetInPlugin && !serviceDefSetInPlugin) {
@@ -303,6 +313,7 @@ public class PolicyRefresher extends Thread {
 		}
 
 		try {
+			// 从服务端拉取策略，根据版本号和服务端版本号比较判断是否更新。若版本号一致，则返回空。
 			svcPolicies = rangerAdmin.getServicePoliciesIfUpdated(lastKnownVersion, lastActivationTimeInMillis);
 
 			boolean isUpdated = svcPolicies != null;
@@ -397,7 +408,7 @@ public class PolicyRefresher extends Thread {
 
 		return policies;
 	}
-	
+
 	public void saveToCache(ServicePolicies policies) {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("==> PolicyRefresher(serviceName=" + serviceName + ").saveToCache()");
@@ -419,7 +430,7 @@ public class PolicyRefresher extends Thread {
 					}
 				}
 			}
-			
+
 	    	if(cacheFile != null) {
 
 				RangerPerfTracer perf = null;
@@ -429,10 +440,10 @@ public class PolicyRefresher extends Thread {
 				}
 
 				Writer writer = null;
-	
+
 				try {
 					writer = new FileWriter(cacheFile);
-	
+
 			        gson.toJson(policies, writer);
 		        } catch (Exception excp) {
 		        	LOG.error("failed to save policies to cache file '" + cacheFile.getAbsolutePath() + "'", excp);

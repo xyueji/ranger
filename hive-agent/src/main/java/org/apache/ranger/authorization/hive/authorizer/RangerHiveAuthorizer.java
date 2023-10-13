@@ -136,7 +136,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 		LOG.debug("RangerHiveAuthorizer.RangerHiveAuthorizer()");
 
 		RangerHivePlugin plugin = hivePlugin;
-		
+
 		if(plugin == null) {
 			synchronized(RangerHiveAuthorizer.class) {
 				plugin = hivePlugin;
@@ -1030,7 +1030,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 	public List<HivePrivilegeObject> filterListCmdObjects(List<HivePrivilegeObject> objs,
 														  HiveAuthzContext          context)
 		      throws HiveAuthzPluginException, HiveAccessControlException {
-		
+
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(String.format("==> filterListCmdObjects(%s, %s)", objs, context));
 		}
@@ -1070,7 +1070,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug(String.format("filterListCmdObjects: user[%s], groups%s", user, groups));
 			}
-			
+
 			if (ret == null) { // if we got any items to filter then we can't return back a null.  We must return back a list even if its empty.
 				ret = new ArrayList<HivePrivilegeObject>(objs.size());
 			}
@@ -1088,7 +1088,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 					final String format = "filterListCmdObjects: actionType[%s], objectType[%s], objectName[%s], dbName[%s], columns[%s], partitionKeys[%s]; context: commandString[%s], ipAddress[%s]";
 					LOG.debug(String.format(format, actionType, objectType, objectName, dbName, columns, partitionKeys, commandString, ipAddress));
 				}
-				
+
 				RangerHiveResource resource = createHiveResourceForFiltering(privilegeObject);
 				if (resource == null) {
 					LOG.error("filterListCmdObjects: RangerHiveResource returned by createHiveResource is null");
@@ -1425,7 +1425,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 
 				 */
 			break;
-	
+
 			case TABLE:
 			case VIEW:
 			case FUNCTION:
@@ -1456,7 +1456,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 			case INDEX:
 				ret = new RangerHiveResource(objectType, hiveObj.getDbname(), hiveObj.getObjectName());
 			break;
-	
+
 			case COLUMN:
 				ret = new RangerHiveResource(objectType, hiveObj.getDbname(), hiveObj.getObjectName(), StringUtils.join(hiveObj.getColumns(), COLUMN_SEP));
 				//ret.setOwnerUser(hiveObj.getOwnerName());
@@ -1520,7 +1520,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 
 		return ret;
 	}
-	
+
 	 */
 
 	private HiveObjectType getObjectType(HivePrivilegeObject hiveObj, HiveOperationType hiveOpType) {
@@ -1821,7 +1821,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 			}
 			break;
 		}
-		
+
 		return accessType;
 	}
 
@@ -2214,7 +2214,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 
 		for(HivePrivilege privilege : hivePrivileges) {
 			String privName = privilege.getName();
-			
+
 			if(StringUtils.equalsIgnoreCase(privName, HiveAccessType.ALL.name()) ||
 			   StringUtils.equalsIgnoreCase(privName, HiveAccessType.ALTER.name()) ||
 			   StringUtils.equalsIgnoreCase(privName, HiveAccessType.CREATE.name()) ||
@@ -2660,7 +2660,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 							HiveAuthzContext          context,
 							HiveAuthzSessionContext   sessionContext) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append("'checkPrivileges':{");
 		sb.append("'hiveOpType':").append(hiveOpType);
 
@@ -2695,7 +2695,7 @@ public class RangerHiveAuthorizer extends RangerHiveAuthorizerBase {
 				toString(privObjs.get(i), sb);
 			}
 		}
-		
+
 		return sb;
 	}
 
@@ -2885,6 +2885,9 @@ class HiveObj {
 	}
 }
 
+/**
+ * RangerBasePlugin ranger插件中最核心的类，负责从ranger拉取策略并缓存，同时对外暴露接口完成资源访问的权限校验。
+ */
 class RangerHivePlugin extends RangerBasePlugin {
 	public static boolean UpdateXaPoliciesOnGrantRevoke = RangerHadoopConstants.HIVE_UPDATE_RANGER_POLICIES_ON_GRANT_REVOKE_DEFAULT_VALUE;
 	public static boolean BlockUpdateIfRowfilterColumnMaskSpecified = RangerHadoopConstants.HIVE_BLOCK_UPDATE_IF_ROWFILTER_COLUMNMASK_SPECIFIED_DEFAULT_VALUE;
@@ -2901,6 +2904,7 @@ class RangerHivePlugin extends RangerBasePlugin {
 
 	@Override
 	public void init() {
+		// 在init方法中，调用父类的init方法，这个时候在插件内部会触发启动线程，向ranger注册并定时从ranger拉取策略。
 		super.init();
 
 		RangerHivePlugin.UpdateXaPoliciesOnGrantRevoke = getConfig().getBoolean(RangerHadoopConstants.HIVE_UPDATE_RANGER_POLICIES_ON_GRANT_REVOKE_PROP, RangerHadoopConstants.HIVE_UPDATE_RANGER_POLICIES_ON_GRANT_REVOKE_DEFAULT_VALUE);

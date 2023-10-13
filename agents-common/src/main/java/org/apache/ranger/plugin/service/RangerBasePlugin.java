@@ -209,6 +209,7 @@ public class RangerBasePlugin {
 					isNewEngineNeeded = false;
 				}
 			} else {
+				// 策略是否有更新
 				Boolean hasPolicyDeltas = RangerPolicyDeltaUtil.hasPolicyDeltas(policies);
 
 				if (hasPolicyDeltas == null) {
@@ -297,6 +298,7 @@ public class RangerBasePlugin {
 					}
 
 					if (this.refresher != null) {
+						// 策略缓存到本地
 						this.refresher.saveToCache(usePolicyDeltas ? servicePolicies : policies);
 					}
 				}
@@ -345,11 +347,19 @@ public class RangerBasePlugin {
 		return isAccessAllowed(requests, resultProcessor);
 	}
 
+	/**
+	 * TODO 1. 鉴权开始
+	 * @param request
+	 * @param resultProcessor
+	 * @return
+	 */
 	public RangerAccessResult isAccessAllowed(RangerAccessRequest request, RangerAccessResultProcessor resultProcessor) {
 		RangerAccessResult ret          = null;
 		RangerPolicyEngine policyEngine = this.policyEngine;
 
 		if (policyEngine != null) {
+			// TODO 2. 权限校验
+			// 不同的入口，对应不同的策略类型（POLICY_TYPE_ACCESS、POLICY_TYPE_DATAMASK、POLICY_TYPE_ROWFILTER）
 			ret = policyEngine.evaluatePolicies(request, RangerPolicy.POLICY_TYPE_ACCESS, null);
 		}
 
@@ -621,7 +631,7 @@ public class RangerBasePlugin {
 			try {
 				@SuppressWarnings("unchecked")
 				Class<RangerAdminClient> adminClass = (Class<RangerAdminClient>)Class.forName(policySourceImpl);
-				
+
 				ret = adminClass.newInstance();
 			} catch (Exception excp) {
 				LOG.error("failed to instantiate policy source of type '" + policySourceImpl + "'. Will use policy source of type '" + RangerAdminRESTClient.class.getName() + "'", excp);
@@ -632,6 +642,7 @@ public class RangerBasePlugin {
 			ret = new RangerAdminRESTClient();
 		}
 
+		// 初始化请求ranger服务端的客户端信息
 		ret.init(pluginConfig.getServiceName(), pluginConfig.getAppId(), pluginConfig.getPropertyPrefix(), pluginConfig);
 
 		if(LOG.isDebugEnabled()) {
@@ -678,7 +689,7 @@ public class RangerBasePlugin {
 	private void auditGrantRevoke(GrantRevokeRequest request, String action, boolean isSuccess, RangerAccessResultProcessor resultProcessor) {
 		if(request != null && resultProcessor != null) {
 			RangerAccessRequestImpl accessRequest = new RangerAccessRequestImpl();
-	
+
 			accessRequest.setResource(new RangerAccessResourceImpl(StringUtil.toStringObjectMap(request.getResource())));
 			accessRequest.setUser(request.getGrantor());
 			accessRequest.setAccessType(RangerPolicyEngine.ADMIN_ACCESS);

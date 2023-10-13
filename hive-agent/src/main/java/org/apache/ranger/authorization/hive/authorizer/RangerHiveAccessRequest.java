@@ -29,6 +29,10 @@ import org.apache.ranger.plugin.policyengine.RangerAccessRequestImpl;
 import org.apache.ranger.plugin.policyengine.RangerPolicyEngine;
 import org.apache.ranger.plugin.util.RangerAccessRequestUtil;
 
+/**
+ * 资源访问的封装类，内部包含了上面提到的资源封装类，同时还包括访问资源的用户、用户组、角色、访问的类型、客户端IP等信息。
+ * 最终调用接口进行权限校验时，该类的实例对象需要作为参数被传入。
+ */
 public class RangerHiveAccessRequest extends RangerAccessRequestImpl {
 	private HiveAccessType accessType = HiveAccessType.NONE;
 
@@ -62,7 +66,7 @@ public class RangerHiveAccessRequest extends RangerAccessRequestImpl {
 			this.setClientType(sessionContext.getClientType() == null ? null : sessionContext.getClientType().toString());
 			this.setSessionId(sessionContext.getSessionString());
 		}
-		
+
 	}
 
 	public RangerHiveAccessRequest(RangerHiveResource      resource,

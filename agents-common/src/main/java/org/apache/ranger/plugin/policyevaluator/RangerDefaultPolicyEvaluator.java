@@ -243,6 +243,7 @@ public class RangerDefaultPolicyEvaluator extends RangerAbstractPolicyEvaluator 
 
 				final boolean isMatched;
 
+				// TODO 6. 遍历不同策略条件中的策略条目，并调用对应接口（isMatch），获取与访问动作匹配的策略条目，然后判断是否允许访问，最终得出权限校验结果。
 				if (request.isAccessTypeAny()) {
 					isMatched = matchType != RangerPolicyResourceMatcher.MatchType.NONE;
 				} else if (request.getResourceMatchingScope() == RangerAccessRequest.ResourceMatchingScope.SELF_OR_DESCENDANTS) {
@@ -341,7 +342,7 @@ public class RangerDefaultPolicyEvaluator extends RangerAbstractPolicyEvaluator 
 		}
 
 		boolean ret = isAccessAllowed(user, userGroups, roles, resource.getOwnerUser(), accessType) && isMatch(resource, null);
-		
+
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("<== RangerDefaultPolicyEvaluator.isAccessAllowed(" + resource + ", " + user + ", " + userGroups + ", " + roles + ", " + accessType + "): " + ret);
 		}
@@ -375,7 +376,7 @@ public class RangerDefaultPolicyEvaluator extends RangerAbstractPolicyEvaluator 
 		}
 
 		boolean ret = isAccessAllowed(user, userGroups, roles, null, accessType) && isMatch(policy, null);
-		
+
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("<== RangerDefaultPolicyEvaluator.isAccessAllowed(" + policy.getId() + ", " + user + ", " + userGroups + ", " + roles + ", " + accessType + "): " + ret);
 		}
@@ -609,6 +610,7 @@ public class RangerDefaultPolicyEvaluator extends RangerAbstractPolicyEvaluator 
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Using ACL Summary for access evaluation. PolicyId=[" + getId() + "]");
 			}
+			// 根据策略判断权限
 			Integer accessResult = lookupPolicyACLSummary(request.getUser(), request.getUserGroups(), request.getUserRoles(),  request.getAccessType());
 			if (accessResult != null) {
 				updateAccessResult(result, matchType, accessResult.equals(RangerPolicyEvaluator.ACCESS_ALLOWED), null);

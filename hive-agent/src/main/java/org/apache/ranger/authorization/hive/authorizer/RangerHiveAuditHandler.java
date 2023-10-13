@@ -35,6 +35,9 @@ import org.apache.ranger.plugin.policyengine.RangerAccessResult;
 
 import com.google.common.collect.Lists;
 
+/**
+ * 审计日志的处理类，所有的权限校验动作都可以作为审计日志被记录下来
+ */
 public class RangerHiveAuditHandler extends RangerDefaultAuditHandler {
 
 	private static final Log LOG = LogFactory.getLog(RangerDefaultAuditHandler.class);
@@ -105,7 +108,7 @@ public class RangerHiveAuditHandler extends RangerDefaultAuditHandler {
 
 		return auditEvent;
 	}
-	
+
 	AuthzAuditEvent createAuditEvent(RangerAccessResult result) {
 
 		AuthzAuditEvent ret = null;
@@ -181,7 +184,7 @@ public class RangerHiveAuditHandler extends RangerDefaultAuditHandler {
 		} else {
 			result = Lists.newArrayList(deniedAuditEvent);
 		}
-		
+
 		return result;
 	}
 
@@ -256,9 +259,9 @@ public class RangerHiveAuditHandler extends RangerDefaultAuditHandler {
     		if(auditEvents == null) {
     			auditEvents = new ArrayList<AuthzAuditEvent>();
     		}
-    		
+
     		auditEvents.add(auditEvent);
-    		
+
     		if(auditEvent.getAccessResult() == 0) {
     			deniedExists = true;
     		}

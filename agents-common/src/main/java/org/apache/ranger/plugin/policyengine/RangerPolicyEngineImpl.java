@@ -454,6 +454,7 @@ public class RangerPolicyEngineImpl implements RangerPolicyEngine {
 		} else if (zoneNames.size() == 1 || request.isAccessTypeAny()) {
 			// Evaluate zone specific policies
 			for (String zoneName : zoneNames) {
+				// TODO 3. 获取策略仓库
 				policyRepository = policyEngine.getRepositoryForZone(zoneName);
 
 				ret = evaluatePoliciesNoAudit(request, policyType, zoneName, policyRepository, tagPolicyRepository);
@@ -509,6 +510,8 @@ public class RangerPolicyEngineImpl implements RangerPolicyEngine {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("==> RangerPolicyEngineImpl.evaluatePoliciesNoAudit(" + request + ", policyType =" + policyType + ", zoneName=" + zoneName + ")");
 		}
+
+		// TODO 4. 根据请求资源、获取匹配的policyEvaluator列表。
 
 		final Date               accessTime  = request.getAccessTime() != null ? request.getAccessTime() : new Date();
 		final RangerAccessResult ret         = createAccessResult(request, policyType);
@@ -650,6 +653,7 @@ public class RangerPolicyEngineImpl implements RangerPolicyEngine {
 
 				result.incrementEvaluatedPoliciesCount();
 
+				// TODO 5. 对policyEvaluator列表一次调用evaluator进行权限匹配，一旦有确定结果则返回（终止循环，不进行后续的调用）
 				evaluator.evaluate(tagEvalRequest, tagEvalResult);
 
 				if (tagEvalResult.getIsAllowed()) {

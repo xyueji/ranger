@@ -103,7 +103,7 @@ public class AssetMgr extends AssetMgrBase {
 
 	@Autowired
 	XGroupService xGroupService;
-	
+
 	@Autowired
 	XUserMgr xUserMgr;
 
@@ -140,7 +140,7 @@ public class AssetMgr extends AssetMgrBase {
 					MessageEnums.DATA_NOT_FOUND, id, "dataSourceId",
 					"DataSource not found with " + "id " + id);
 		}
-		
+
 		return getXResourceFile(xResource, fileType);
 	}
 
@@ -200,7 +200,7 @@ public class AssetMgr extends AssetMgrBase {
 
 		HashMap<String, Object> updatedRepo = new HashMap<String, Object>();
 		updatedRepo.put("repository_name", xAsset.getName());
-		
+
 		XXPolicyExportAudit policyExportAudit = new XXPolicyExportAudit();
 		policyExportAudit.setRepositoryName(xAsset.getName());
 
@@ -305,7 +305,7 @@ public class AssetMgr extends AssetMgrBase {
 
 		if(epochTime == updatedTime) {
 			int resourceListSz = xResourceList.size();
-			
+
 			if (policyCount == resourceListSz) {
 				policyExportAudit
 						.setHttpRetCode(HttpServletResponse.SC_NOT_MODIFIED);
@@ -365,7 +365,7 @@ public class AssetMgr extends AssetMgrBase {
 				}
 
 				populatePermMap(xResource, resourceMap, AppConstants.ASSET_HIVE);
-				
+
 				List<VXAuditMap> xAuditMaps = xResource.getAuditList();
 				if (xAuditMaps.size() != 0) {
 					resourceMap.put("audit", 1);
@@ -431,7 +431,7 @@ public class AssetMgr extends AssetMgrBase {
 				}
 				resourceList.add(resourceMap);
 			}
-			
+
         }
         else if (xAsset.getAssetType() == AppConstants.ASSET_STORM) {
                 for (VXResource xResource : xResourceList) {
@@ -469,7 +469,7 @@ public class AssetMgr extends AssetMgrBase {
 		updatedRepo.put("last_updated", updatedTime);
 		updatedRepo.put("policyCount", policyCount);
 		updatedRepo.put("acl", resourceList);
-		
+
 		String updatedPolicyStr = jsonUtil.readMapToString(updatedRepo);
 
 //		File file = null;
@@ -528,7 +528,7 @@ public class AssetMgr extends AssetMgrBase {
 
 							if (users != null) {
 								users.add(xPermMap.getUserName());
-								sortedPermMap.put("users", users);								
+								sortedPermMap.put("users", users);
 							}
 						}
 
@@ -548,9 +548,9 @@ public class AssetMgr extends AssetMgrBase {
 					String perm = AppConstants.getLabelFor_XAPermType(xPermMap
 							.getPermType());
 					permSet.add(perm);
-					
+
 					sortedPermMap.put("access", permSet);
-					
+
 					if(assetType == AppConstants.ASSET_KNOX) {
 						String[] ipAddrList = new String[0];
 						if(xPermMap.getIpAddress() != null) {
@@ -559,7 +559,7 @@ public class AssetMgr extends AssetMgrBase {
 						} else
 							sortedPermMap.put("ipAddress",ipAddrList);
 					}
-					
+
 					Long groupId = xPermMap.getGroupId();
 					Long userId = xPermMap.getUserId();
 
@@ -642,6 +642,7 @@ public class AssetMgr extends AssetMgrBase {
 			final XXPolicyExportAudit xXPolicyExportAudit) {
 
 		XXPolicyExportAudit ret = null;
+		// 服务端数据没变则不入库
 		if (xXPolicyExportAudit.getHttpRetCode() == HttpServletResponse.SC_NOT_MODIFIED) {
 			boolean logNotModified = PropertiesUtil.getBooleanProperty("ranger.log.SC_NOT_MODIFIED", false);
 			if (!logNotModified) {
@@ -1138,17 +1139,17 @@ public class AssetMgr extends AssetMgrBase {
 				.findByTransactionId(transactionId);
 		VXTrxLogList vXTrxLogList = new VXTrxLogList();
 		List<VXTrxLog> trxLogList = new ArrayList<VXTrxLog>();
-		
+
 		for(XXTrxLog xTrxLog : xTrxLogList) {
 		        trxLogList.add(xTrxLogService.populateViewBean(xTrxLog));
 		}
-		
+
 		List<VXTrxLog> vXTrxLogs = validateXXTrxLogList(trxLogList);
 		vXTrxLogList.setVXTrxLogs(vXTrxLogs);
 		return vXTrxLogList;
 	}
 	public List<VXTrxLog> validateXXTrxLogList(List<VXTrxLog> xTrxLogList) {
-		
+
 		List<VXTrxLog> vXTrxLogs = new ArrayList<VXTrxLog>();
 		for (VXTrxLog xTrxLog : xTrxLogList) {
 			VXTrxLog vXTrxLog = new VXTrxLog();
@@ -1181,7 +1182,7 @@ public class AssetMgr extends AssetMgrBase {
 							vXTrxLog.setPreviousValue(tempPreviousStr.replace(tempPrevious, "\"password\":\"******\""));
 							break;
 						}
-					}			
+					}
 				}
 				if(vXTrxLog.getNewValue() != null && vXTrxLog.getNewValue().contains("password")) {
 					String tempNewStr = vXTrxLog.getNewValue();
@@ -1200,9 +1201,9 @@ public class AssetMgr extends AssetMgrBase {
 							vXTrxLog.setNewValue(tempNewStr.replace(tempNew, "\"password\":\"******\""));
 							break;
 						}
-					}	
+					}
 				}
-			}			
+			}
                         vXTrxLogs.add(vXTrxLog);
 		}
 		return vXTrxLogs;
@@ -1281,7 +1282,7 @@ public class AssetMgr extends AssetMgrBase {
 		}
 		return xUgsyncAuditInfoService.searchXUgsyncAuditInfoList(searchCriteria);
 	}
-	
+
 	public VXUgsyncAuditInfoList getUgsyncAuditsBySyncSource(String syncSource) {
 		if(syncSource!=null && !syncSource.trim().isEmpty()){
 			return xUgsyncAuditInfoService.searchXUgsyncAuditInfoBySyncSource(syncSource);
